@@ -11,6 +11,7 @@ class yahooDownloadClass(object):
         return
  
     def getDataFromYahoo(symbol,firstDate): 
+
         man = "%s, %s, %s" %(firstDate[0],firstDate[1],firstDate[2])
         startDate = parser.parse(man) + timedelta(1)
         #print startDate, date.today()
@@ -20,11 +21,11 @@ class yahooDownloadClass(object):
         return newEntries[1:]
  
     def data2file(sym,data,rootdir='your_dir'):
+
         fid = open('%s/%s'%(rootdir,sym),'w')
         for i in data:
             k = ",".join(i)
             fid.write(",".join([k,'\n']))
- 
  
         if __name__ == "__main__":
  
