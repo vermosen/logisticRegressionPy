@@ -1,8 +1,15 @@
 import pandas as pd
 import statsmodels.api as sm
 import numpy as np
-#import pylab as pl
+import pylab as pl
+import talib as ta
+
+from datetime import date, timedelta
+from yahooDownloadClass import yahooDownloadClass  as yahoo
  
+# testing yahoo class
+df2 = yahoo().getDataFromYahoo("AUD=X", date(2007, 1, 3))
+
 # read the data from the internet
 df = pd.read_csv("http://www.ats.ucla.edu/stat/data/binary.csv")
  
@@ -41,3 +48,6 @@ logit = sm.Logit(data['admit'], data[train_cols])
 result = logit.fit()
 
 print(result.summary())
+
+df.hist()                       # prints histogram
+pl.show()
