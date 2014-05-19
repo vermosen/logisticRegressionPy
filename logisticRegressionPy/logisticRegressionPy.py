@@ -1,37 +1,70 @@
+#####################################
+#                                   #
+# This simple procedure aims at     #
+# fitting logistic regression       #
+# from a simple financial series    #
+#                                   #
+#####################################
+
 import pandas as pd
 import statsmodels.api as sm
+import matplotlib.pyplot as plt
 import numpy as np
-import pylab as pl
-import talib as ta
-
-from datetime import date, timedelta
+from datetime import date
 from yahooDownloadClass import yahooDownloadClass  as yahoo
- 
-# testing yahoo class
-df2 = yahoo().getDataFromYahoo("AUD=X", date(2007, 1, 3))
+
+pd.set_option('display.notebook_repr_html', False)          # Set some Pandas options
+pd.set_option('display.max_columns', 20)
+pd.set_option('display.max_rows', 25)
+
+df = yahoo().getDataFromYahoo("AUD=X",                      # get data set through yahoo class
+                              date(2007, 1, 3))    
+
+# data formatting
+df.Open = df.Open.replace('-', 
+                          'NaN', 
+                          regex=True).astype('float')
+
+df.Close = df.Close.replace('-', 
+                            'NaN', 
+                            regex=True).astype('float')
+
+# dataframe plot
+fig = plt.figure(figsize=(8, 8))
+
+df.Open.plot(ax=fig.gca())                                  # open
+plt.title('open', color='black')
+plt.show()
+
+df.Close.plot(ax=fig.gca())                                 # close
+plt.title('close', color='black')
+plt.show()
+
+# create a clean data fram for the regression
+
 
 # read the data from the internet
-df = pd.read_csv("http://www.ats.ucla.edu/stat/data/binary.csv")
+df2 = pd.read_csv("http://www.ats.ucla.edu/stat/data/binary.csv")
  
-df.columns = ["admit",          # rename columns
+df2.columns = ["admit",          # rename columns
               "gre", 
               "gpa", 
               "prestige"]
 
 #summarize data
-print(df.describe())            # description
-print(df.std())                 # std
-print(pd.crosstab(df['admit'],  # crosstab
-                  df['prestige'], 
+print(df2.describe())            # description
+print(df2.std())                 # std
+print(pd.crosstab(df2['admit'],  # crosstab
+                  df2['prestige'], 
                   rownames=['admit']))
 
 # create a clean data frame for the regression
 dummy_ranks = pd.get_dummies(   # dummify rank
-                  df['prestige'], 
+                  df2['prestige'], 
                   prefix='prestige')
 
 cols_to_keep = ['admit', 'gre', 'gpa']
-data = df[cols_to_keep].join(   # merge with existing data
+data = df2[cols_to_keep].join(   # merge with existing data
            dummy_ranks.ix[:, 'prestige_2':])
 
 data['intercept'] = 1.0         # manually add the intercept
@@ -49,5 +82,4 @@ result = logit.fit()
 
 print(result.summary())
 
-df.hist()                       # prints histogram
-pl.show()
+df2.hist()                       # prints histogram

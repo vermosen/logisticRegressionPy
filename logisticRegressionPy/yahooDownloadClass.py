@@ -1,8 +1,6 @@
 from dateutil import parser
 import pandas as pd
-import numpy as np
-from array import array
-from datetime import date, timedelta
+from datetime import datetime
 from matplotlib import finance
 
 class yahooDownloadClass(object):
@@ -27,14 +25,25 @@ class yahooDownloadClass(object):
 
         hist = finance.fetch_historical_yahoo(symbol, 
                                               startDate, 
-                                              date.today())
+                                              datetime.today())
         
-        newEntries = []
+        newEntries = []                                 # container
 
         for i in hist: 
-            newEntries.append(i[:-1].replace("-",",").split(','))
-        
-        return newEntries
+            newEntries.append(i[:-1].replace("-","/").split(','))
+
+        try:
+
+            col = newEntries.pop(0)
+
+            for i in newEntries:                        # TODO: regroup the 2 for loops...
+                i[0] = datetime.strptime(i[0], '%Y/%m/%d')
+
+            data = pd.DataFrame(newEntries, columns = col)
+
+        except ValueError as e:
+            print (e.trerror)
+        return data
 
     def data2file(self, sym, data, rootdir='your_dir'):
 
