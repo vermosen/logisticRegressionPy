@@ -6,80 +6,82 @@
 #                                   #
 #####################################
 
-import pandas as pd
+import math
+import pandas
 import statsmodels.api as sm
 import matplotlib.pyplot as plt
 import numpy as np
 from datetime import date
 from yahooDownloadClass import yahooDownloadClass  as yahoo
+import csv
 
-pd.set_option('display.notebook_repr_html', False)          # Set some Pandas options
-pd.set_option('display.max_columns', 20)
-pd.set_option('display.max_rows', 25)
+pandas.set_option('display.notebook_repr_html', False)      # Set some Pandas options
+pandas.set_option('display.max_columns', 20)
+pandas.set_option('display.max_rows', 25)
 
-df = yahoo().getDataFromYahoo("AUD=X",                      # get data set through yahoo class
+code = "MSFT"
+
+df = yahoo().getDataFromYahoo(code,                         # get data set through yahoo class
                               date(2007, 1, 3))    
 
-# data formatting
-df.Open = df.Open.replace('-', 
-                          'NaN', 
+
+df.Open = df.Open.replace('-', 'NaN',                       # data formatting
                           regex=True).astype('float')
 
-df.Close = df.Close.replace('-', 
-                            'NaN', 
+df.Close = df.Close.replace('-', 'NaN', 
                             regex=True).astype('float')
+
+df.High = df.High.replace('-', 'NaN', 
+                          regex=True).astype('float')
+
+df.Low = df.Low.replace('-', 'NaN', 
+                        regex=True).astype('float')
+
+df.Volume = df.Volume.replace('-', 'NaN', 
+                              regex=True).astype('float')
 
 # dataframe plot
 fig = plt.figure(figsize=(8, 8))
 
-df.Open.plot(ax=fig.gca())                                  # open
-plt.title('open', color='black')
+df.Close.plot(ax=fig.gca())                                 # volume
+plt.title(code, color='black')
 plt.show()
 
-df.Close.plot(ax=fig.gca())                                 # close
-plt.title('close', color='black')
-plt.show()
-
-# create a clean data fram for the regression
+# summarize data
+print(df.describe())                                        # description
+print(df.std())                                             # std
 
 
-# read the data from the internet
-df2 = pd.read_csv("http://www.ats.ucla.edu/stat/data/binary.csv")
- 
-df2.columns = ["admit",          # rename columns
-              "gre", 
-              "gpa", 
-              "prestige"]
+c_diff = df.Close / df.Open                                 # create the difference series
+c_bool = (c_diff >= 1.0000000)
 
-#summarize data
-print(df2.describe())            # description
-print(df2.std())                 # std
-print(pd.crosstab(df2['admit'],  # crosstab
-                  df2['prestige'], 
-                  rownames=['admit']))
+print(c_bool)
+reg = pandas.concat([c_bool,                                # the variable to explain
+                     c_diff.shift(1),                       # the regressors
+                     c_diff.shift(2),
+                     c_diff.shift(3),
+                     df.Volume.shift(1),
+                     df.Volume.shift(2),
+                     df.Volume.shift(3)], 
+                    axis = 1)
 
-# create a clean data frame for the regression
-dummy_ranks = pd.get_dummies(   # dummify rank
-                  df2['prestige'], 
-                  prefix='prestige')
+reg.columns = ['move', 'diff_1', 'diff_2',                  # rename columns
+               'diff_3', 'vol_1', 'vol_2', 
+               'vol_3']
 
-cols_to_keep = ['admit', 'gre', 'gpa']
-data = df2[cols_to_keep].join(   # merge with existing data
-           dummy_ranks.ix[:, 'prestige_2':])
+reg['intercept'] = 1.0                                      # manually add the intercept
 
-data['intercept'] = 1.0         # manually add the intercept
+reg = reg.drop(reg.index[:3])                               # drop the first data
+#print("generated a clean data set...")
+print(reg.head())                                           # print the data in a file
 
-print("generates a clean data set...")
-print(data.head())              # print the fina data set
+reg.to_csv('test.csv')                                      # convert data into csv
+print('matrix rank:')                                       # check for singular values
+print(np.linalg.matrix_rank(reg.values))                    # TODO: throw error if rank < nbcol
 
-train_cols = data.columns[1:]
-# Index([gre, gpa, prestige_2, prestige_3, prestige_4], dtype=object)
- 
-logit = sm.Logit(data['admit'], data[train_cols])
- 
-# fit the model
-result = logit.fit()
+logit = sm.GLM(reg['move'],                                 # logit regression
+               reg.ix[:,'diff_1':], 
+               family = sm.families.Binomial(link=sm.families.links.log),
+               missing = 'drop')
 
-print(result.summary())
-
-df2.hist()                       # prints histogram
+print(logit.fit().summary())                                # fit the regression
