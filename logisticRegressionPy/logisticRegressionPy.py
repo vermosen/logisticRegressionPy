@@ -19,7 +19,7 @@ pandas.set_option('display.notebook_repr_html', False)      # Set some Pandas op
 pandas.set_option('display.max_columns', 20)
 pandas.set_option('display.max_rows', 25)
 
-code = "MSFT"
+code = 'MSFT'
 
 df = yahoo().getDataFromYahoo(code,                         # get data set through yahoo class
                               date(2007, 1, 3))    
@@ -53,9 +53,9 @@ print(df.std())                                             # std
 
 
 c_diff = df.Close / df.Open                                 # create the difference series
-c_bool = (c_diff >= 1.0000000)
+c_bool = (c_diff >= 1.0000000).astype('float')
 
-print(c_bool)
+
 reg = pandas.concat([c_bool,                                # the variable to explain
                      c_diff.shift(1),                       # the regressors
                      c_diff.shift(2),
@@ -81,7 +81,7 @@ print(np.linalg.matrix_rank(reg.values))                    # TODO: throw error 
 
 logit = sm.GLM(reg['move'],                                 # logit regression
                reg.ix[:,'diff_1':], 
-               family = sm.families.Binomial(link=sm.families.links.log),
+               family = sm.families.Binomial(),#link=sm.families.links.log),
                missing = 'drop')
 
 print(logit.fit().summary())                                # fit the regression
