@@ -12,8 +12,7 @@ import statsmodels.api as sm
 import matplotlib.pyplot as plt
 import numpy as np
 from datetime import date
-from yahooDownloadClass import yahooDownloadClass  as yahoo
-import csv
+from yahooDownloadClass import yahooDownloadClass as yahoo
 
 pandas.set_option('display.notebook_repr_html', False)      # Set some Pandas options
 pandas.set_option('display.max_columns', 20)

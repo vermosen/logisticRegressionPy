@@ -5,6 +5,7 @@
 #                                  #
 ####################################
 
+import logging
 from dateutil import parser
 import pandas as pd
 from datetime import datetime
@@ -16,7 +17,7 @@ class yahooDownloadClass(object):
     author = "Jean-Mathieu Vermosen"
 
     # empty ctor
-    def __init__(self):
+    def __init__(self, debug=False):
 
         return
  
@@ -42,7 +43,7 @@ class yahooDownloadClass(object):
             data = pd.DataFrame(newEntries, columns = col)
 
         except ValueError as e:
-            print (e.trerror)
+            logging.error('error in data set')
         return data
 
     # convert data to a file
