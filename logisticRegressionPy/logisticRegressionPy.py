@@ -13,6 +13,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from datetime import date
 from yahooDownloadClass import yahooDownloadClass as yahoo
+from interactiveBrokerDownloadClass import interactiveBrokerDownloadClass as ib
 
 pandas.set_option('display.notebook_repr_html', False)      # Set some Pandas options
 pandas.set_option('display.max_columns', 20)
@@ -20,6 +21,10 @@ pandas.set_option('display.max_rows', 25)
 
 code = 'MSFT'
 
+# test 1 : IB
+df2 = ib().requestData(code, date(2007, 1, 3))
+
+# test 2 : yahoo
 df = yahoo().getDataFromYahoo(code,                         # get data set through yahoo class
                               date(2007, 1, 3))    
 

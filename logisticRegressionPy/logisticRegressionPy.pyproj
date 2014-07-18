@@ -22,9 +22,9 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="downloadClass\interactiveBrokerDownloadClass.py" />
+    <Compile Include="interactiveBrokerDownloadClass.py" />
     <Compile Include="logisticRegressionPy.py" />
-    <Compile Include="downloadClass\yahooDownloadClass.py" />
+    <Compile Include="yahooDownloadClass.py" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="downloadClass\" />
