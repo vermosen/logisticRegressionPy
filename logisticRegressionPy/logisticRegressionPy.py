@@ -6,6 +6,8 @@
 #                                   #
 #####################################
 
+from distutils.sysconfig import get_python_lib
+
 import math
 import pandas
 import statsmodels.api as sm
@@ -27,7 +29,6 @@ df2 = ib().requestData(code, date(2007, 1, 3))
 # test 2 : yahoo
 df = yahoo().getDataFromYahoo(code,                         # get data set through yahoo class
                               date(2007, 1, 3))    
-
 
 df.Open = df.Open.replace('-', 'NaN',                       # data formatting
                           regex=True).astype('float')

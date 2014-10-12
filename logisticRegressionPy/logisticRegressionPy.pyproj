@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>094800ac-f3fa-4b33-8a8b-f4d452c1a32e</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>logisticRegressionPy.py</StartupFile>
+    <StartupFile>module1.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -24,6 +24,8 @@
   <ItemGroup>
     <Compile Include="interactiveBrokerDownloadClass.py" />
     <Compile Include="logisticRegressionPy.py" />
+    <Compile Include="module1.py" />
+    <Compile Include="mySqlAccess.py" />
     <Compile Include="yahooDownloadClass.py" />
   </ItemGroup>
   <ItemGroup>
